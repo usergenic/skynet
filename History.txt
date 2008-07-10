@@ -1,11 +1,11 @@
 == 0.9.300 2008-07-09
 Hello, this is Brendan
- - Rewrote send_later and the job to work like send.
+ - Rewrote send_later and method_missing _later suffix to operate like Ruby's send method to support a more coherent  programming interface.
+ - Fixed some file permissions that ruined gem installations for some system configurations.
+ - Changed the skynet_config.rb template to allow for alternative Rails code ala vendor/rails instead of forcing gem active_record to enable compatibility with edge rails as well as older versions.
+ - Changed code in CONFIG declarations to fix a compatibility bug while supporting the intent of the original programmer.
  - Modified template extension in extra/rails to use .html.erb
  - Removed extraneous skynet_ name prefixes from files.
- - Changed defined?(CONFIG) to constants.include?('CONFIG') declaration because it doesn't work if you have a base-level CONFIG constant.
- - Fixed some file permissions that f'd up gem installation.
- - Changed the skynet_config.rb template to allow for vendor/rails instead of gem rails.
 
 == 0.9.3 2008-05-22
 Skynet::Manager and Skynet Script Runner
