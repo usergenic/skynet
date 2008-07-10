@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+
+# This is the main skynet starter script.
+# It can be used to start the skynet_tuplespace_server as well as all skynet workers.
+# It is important that this script has access to your code. If you want to run
+# skynet within your code you'll want to read about bin/skynet_install[link:files/bin/skynet_install.html]
+#
+# Usage: skynet [options]
+#     -w, --workers WORKERS            Number of workers to start.  The default is 4 and is stored in Skynet::CONFIG[:NUMBER_OF_WORKERS]
+#     -i, --increment-worker-version   Increment Worker Version
+#     -a, --add-workers WORKERS        Number of workers to add.
+#     -k, --remove-workers WORKERS     Number of workers to remove.
+#     -r, --required LIBRARY           Require the specified libraries
+#         --restart-all-workers        Restart All Workers                                      
+#         --restart-workers            Restart Workers                                      
+#
+# If you have chosen to use the TupleSpace message queue adapter this script will see if there is an available TS first
+# and start one if there is not.  You can also start the bin/skynet_tuplespace_server[link:files/bin/skynet_tuplespace_server.html] manually.  
+#
+# Running skynet starts a Skynet::Manager which in turn spawns the Skynet::Worker processes with the appropriate options.
+# You only need to run skynet once per machine.  If you want to add more workers, use the appropriate flags above to do so.
+# Only one manager should be running per machine.  The Skynet::Manager does not dole out tasks
+#
+# You should set all of your Skynet::CONFIG (or Skynet.configure()) options here (or in one of your environment files.)
+# See Skynet::Config for more information on configuration options.
+
+require 'rubygems'
+require File.expand_path(File.dirname(__FILE__)) + '/../lib/skynet.rb'
+
+
+if config_arg = ARGV.detect {|i| i =~ /--help/ }
+  Skynet.start
+  exit
+end
+
+conf_file = nil
+if config_arg = ARGV.detect {|i| i =~ /--config/i }
+  conf_file = config_arg.split('=').last
+  ARGV.delete_if {|i| i =~ /--config/ }  
+else
+  ['config/skynet_config.rb', 'skynet_config.rb', "../config/skynet_config.rb" , "#{ENV['HOME']}/.skynet/config.rb"].each do |path|
+    if File.exists?(path)
+      conf_file = path
+      break
+    end
+  end
+end
+
+if conf_file
+  Skynet::CONFIG[:CONFIG_FILE]      = File.expand_path(conf_file)
+  Skynet::CONFIG[:APP_ROOT]         = File.dirname(Skynet::CONFIG[:CONFIG_FILE])
+  Skynet::CONFIG[:SKYNET_LOG_DIR]   = File.expand_path(Skynet::CONFIG[:APP_ROOT]+ "/../log")
+  Skynet::CONFIG[:SKYNET_PID_DIR]   = File.expand_path(Skynet::CONFIG[:APP_ROOT] + "/../log")
+  begin
+    require conf_file
+  rescue MissingSourceFile => e
+    puts "Specified config file #{conf_file} is missing."
+    exit
+  end
+  puts "using config file: #{File.expand_path(conf_file)}" unless conf_file == 'config/skynet_config.rb'
+else
+  puts "No configuration file found.\nTry running skynet_install to create a config/skynet_config.rb or starting skynet with --config=CONFIG_FILE_LOCATION.  Exiting."
+  exit
+end
+
+Skynet::CONFIG[:WORKER_CHECK_DELAY]     ||= 4
+Skynet::CONFIG[:LAUNCHER_PATH]          = File.expand_path(__FILE__)
+
+Skynet::CONFIG[:SYSTEM_RUNNER] = true
+
+Skynet.start
