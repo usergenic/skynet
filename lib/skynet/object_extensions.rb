@@ -3,12 +3,20 @@ module Skynet::ObjectExtensions
   def send_later(method, *arguments, &block)
     
     raise ArgumentError("send_later can not serialize blocks.") if block_given?
-    
-    data = {
-      :object    => self,
-      :method    => method,
-      :arguments => arguments
-    }.to_yaml
+
+    if is_a?(Class)
+      data = {
+        :class_name => name,
+        :method     => method,
+        :arguments  => arguments
+      }.to_yaml
+    else
+      data = {
+        :object    => self,
+        :method    => method,
+        :arguments => arguments
+      }.to_yaml
+    end
 
     jobopts = {
       :single                => true,
@@ -47,11 +55,12 @@ class Skynet::ObjectAsync
     def map(datas)
       begin
         datas.each do |yaml|
-          data  = YAML.load(yaml)
+          data = YAML.load(yaml)
+          data[:object] = data[:class_name].constantize if data[:class_name]
           data[:object].send(data[:method], *data[:arguments])
         end
       rescue Exception => e
-        error "Error in #{self} #{e.inspect} with data #{data.inspect}"
+        error "Error in #{self} #{e.inspect} with data #{datas.inspect}"
       end
       return
     end
