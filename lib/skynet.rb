@@ -22,6 +22,7 @@ require 'skynet/mapreduce_test'
 require 'skynet/launcher'
 require 'skynet/console'
 require 'skynet/mapreduce_helper'
+require 'skynet/object_helper'
 
 begin
   require 'fastthread'
