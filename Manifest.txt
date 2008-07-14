@@ -36,6 +36,7 @@ lib/skynet/message_queue_adapters/mysql.rb
 lib/skynet/message_queue_adapters/tuple_space.rb
 lib/skynet/message.rb
 lib/skynet/message_queue.rb
+lib/skynet/object_extensions.rb
 lib/skynet/partitioners.rb
 lib/skynet/ruby_extensions.rb
 lib/skynet/task.rb
