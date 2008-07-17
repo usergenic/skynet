@@ -3,6 +3,11 @@ module Skynet::ActiveRecordExtensions
   module ClassMethods
     
     def distributed_find(*args)
+      if args.last.is_a?(Hash)
+        options = args.pop.dup
+        options[:conditions] = sanitize_sql(options[:conditions]) if options[:conditions]
+        args << options
+      end
       all = ActiveRecord::Mapreduce.find(*args)
       all.model_class = self
       all
@@ -193,7 +198,7 @@ module ActiveRecord
       job.run
     end
     
-    def map(klass_or_method=nil,&block)    
+    def map(klass_or_method=nil, *arguments, &block)    
       klass_or_method ||= model_class
       log = Skynet::Logger.get
 
@@ -208,7 +213,8 @@ module ActiveRecord
         if block_given?          
           batch_item << block
         else
-          batch_item << "#{klass_or_method}" 
+          batch_item << "#{klass_or_method}"
+          batch_item << arguments
         end
         batches << batch_item
         if batches.size >= MAX_BATCHES_PER_JOB
@@ -267,7 +273,7 @@ module ActiveRecord
             if data[4].kind_of?(String)
               if ar_object.respond_to?(data[4].to_sym)
                 # log.error "CALLING #{data[4]} on #{ar_object.class}:#{ar_object.id}"
-                ar_object.send(data[4].to_sym)
+                ar_object.send(data[4].to_sym, *data[5])
               else
                 begin
                   data[4].constantize.each(ar_object)
