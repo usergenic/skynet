@@ -24,9 +24,10 @@
 # You should set all of your Skynet::CONFIG (or Skynet.configure()) options here (or in one of your environment files.)
 # See Skynet::Config for more information on configuration options.
 
+$: << File.expand_path(File.dirname(__FILE__)) + '/../lib'
+
 require 'rubygems'
 require File.expand_path(File.dirname(__FILE__)) + '/../lib/skynet.rb'
-
 
 if config_arg = ARGV.detect {|i| i =~ /--help/ }
   Skynet.start
