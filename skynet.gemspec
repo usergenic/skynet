@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name = %q{skynet}
-  s.version = "0.9.317"
+  s.version = "0.9.318"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Pisoni", "Brendan Baldwin"]
-  s.date = %q{2008-07-09}
+  s.date = %q{2009-01-28}
   s.description = %q{Skynet - A Ruby Map/Reduce Framework}
   s.email = %q{apisoni@geni.com}
   s.executables = ["skynet", "skynet_install", "skynet_tuplespace_server"]
