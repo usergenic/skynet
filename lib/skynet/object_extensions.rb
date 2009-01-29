@@ -4,7 +4,7 @@ module Skynet::ObjectExtensions
     
     raise ArgumentError("send_later can not serialize blocks.") if block_given?
 
-    if is_a?(Class)
+    if is_a?(Class) or is_a?(Module)
       data = {
         :class_name => name,
         :method     => method,
@@ -22,12 +22,12 @@ module Skynet::ObjectExtensions
       :single                => true,
       :mappers               => 1,
       :map_data              => [data],
-      :name                  => "send_later #{self.class}##{method}",
+      :name                  => "send_later #{data[:class_name] ? "#{self}.#{method}" : "#{self.class}##{method}"}",
       :map_name              => "",
-      :map_timeout           => 60,
-      :reduce_timeout        => 60,
-      :master_timeout        => 60,
-      :master_result_timeout => 1.minute,
+      :map_timeout           => 2.minutes,
+      :reduce_timeout        => 2.minutes,
+      :master_timeout        => 2.minutes,
+      :master_result_timeout => 2.minutes,
       :map_reduce_class      => Skynet::ObjectAsync,
       :master_retry          => 0,
       :map_retry             => 0

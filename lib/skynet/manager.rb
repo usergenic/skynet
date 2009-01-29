@@ -663,7 +663,7 @@ class Skynet
 
     def self.run_manager(options)
       @manager = Skynet::Manager.new(options)
-      @drb_manager = DRb.start_service("druby://:#{Skynet::CONFIG[:SKYNET_LOCAL_MANAGER_PORT]}", @manager)
+      @drb_manager = DRb.start_service("druby://#{Skynet::CONFIG[:SKYNET_LOCAL_MANAGER_HOST]}:#{Skynet::CONFIG[:SKYNET_LOCAL_MANAGER_PORT]}", @manager)
       @manager.start_workers
       info "MANAGER STARTED ON PORT: #{Skynet::CONFIG[:SKYNET_LOCAL_MANAGER_PORT]}"
       @manager.run

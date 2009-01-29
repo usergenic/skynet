@@ -31,11 +31,11 @@ module Skynet::ActiveRecordExtensions
       :map_data              => [data],
       :name                  => "send_later #{self.class}##{method}",
       :map_name              => "",
-      :map_timeout           => 60,
-      :reduce_timeout        => 60,
-      :master_timeout        => 60,
-      :master_result_timeout => 1.minute,
-      :map_reduce_class      =>  Skynet::ActiveRecordAsync,
+      :map_timeout           => 2.minutes,
+      :reduce_timeout        => 2.minutes,
+      :master_timeout        => 2.minutes,
+      :master_result_timeout => 2.minutes,
+      :map_reduce_class      => Skynet::ActiveRecordAsync,
       :master_retry          => 0,
       :map_retry             => 0
     }   
@@ -182,9 +182,9 @@ module ActiveRecord
         :map_data              => batches,
         :name                  => "each #{model_class} MASTER",
         :map_name              => "each #{model_class} MAP",
-        :map_timeout           => 60,
+        :map_timeout           => 2.minutes,
         :master_timeout        => 12.hours,
-        :master_result_timeout => 60,        
+        :master_result_timeout => 2.minutes,        
         :master_retry          => 0,
         :map_retry             => 0
       }   

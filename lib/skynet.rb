@@ -33,6 +33,11 @@ end
 
 class << Skynet
 
+  def master_tasks
+    ::SkynetMessageQueue.find(:all, :select => "DISTINCT name, COUNT(*) total",:group => "name",:conditions => "payload_type='master'").
+    map{|q|"#{q.name} => #{q.total}"}.sort
+  end
+
   # kinda like system() but gives me back a pid
   def fork_and_exec(command)
     sleep 0.01  # remove contention on manager drb object
